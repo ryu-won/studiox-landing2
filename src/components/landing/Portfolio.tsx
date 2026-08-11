@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import MediaItem from "@/components/landing/MediaItem";
-import { useItemsInfinite } from "@/hooks/useItemsInfinite";
-import type { Category } from "@/types/landing/item.type";
+import { PORTFOLIO_IMAGES } from "@/constants/landing/portfolioImages";
 import { useSearchParams, useRouter } from "next/navigation";
+import type { Category } from "@/types/landing/item.type";
 import { QUERY_KEYS, PORTFOLIO_CATEGORY } from "@/constants/common/paths";
 
 const CATEGORIES: Category[] = [
@@ -13,21 +14,28 @@ const CATEGORIES: Category[] = [
   PORTFOLIO_CATEGORY.IMAGE,
 ];
 
+const PAGE_SIZE = 20;
+
 export default function Portfolio() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get(QUERY_KEYS.PORTFOLIO_CATEGORY);
 
   const category =
-    CATEGORIES.find((category) => category === categoryParam) ??
-    PORTFOLIO_CATEGORY.ALL;
+    CATEGORIES.find((c) => c === categoryParam) ?? PORTFOLIO_CATEGORY.ALL;
 
-  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useItemsInfinite(category, 20);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const allUrls = data?.pages.flatMap((page) => page.urls) ?? [];
+  const filtered =
+    category === PORTFOLIO_CATEGORY.ALL
+      ? PORTFOLIO_IMAGES
+      : PORTFOLIO_IMAGES.filter((img) => img.category === category);
+
+  const visibleImages = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
 
   const handleCategoryChange = (c: Category) => {
+    setVisibleCount(PAGE_SIZE);
     const newParams = new URLSearchParams(searchParams.toString());
     if (c === PORTFOLIO_CATEGORY.ALL) {
       newParams.delete(QUERY_KEYS.PORTFOLIO_CATEGORY);
@@ -60,24 +68,23 @@ export default function Portfolio() {
         })}
       </div>
 
-      {allUrls.length > 0 && (
+      {visibleImages.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 auto-rows-0.25 gap-x-2 grid-flow-dense">
-          {allUrls.map((u, i) => (
-            <MediaItem key={`${u}-${i}`} src={u} />
+          {visibleImages.map((img, i) => (
+            <MediaItem key={`${img.url}-${i}`} src={img.url} />
           ))}
         </div>
       )}
 
-      {hasNextPage && (
+      {hasMore && (
         <div className="flex justify-center mt-12 mb-8">
           <button
             type="button"
-            onClick={() => fetchNextPage()}
-            disabled={isFetchingNextPage}
-            className="w-fit h-fit rounded-[2.25rem] bg-linear-to-b from-[#F1F4F8]/50 to-[#1D2025]/50 p-px disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+            className="w-fit h-fit rounded-[2.25rem] bg-linear-to-b from-[#F1F4F8]/50 to-[#1D2025]/50 p-px"
           >
             <div className="Body_2_semibold flex items-center justify-center rounded-[2.25rem] bg-[rgb(23,24,27)] px-6 py-3 text-White transition-colors duration-300 hover:bg-[rgb(33,34,37)]">
-              {isFetchingNextPage ? "Loading..." : "Load More"}
+              Load More
             </div>
           </button>
         </div>
