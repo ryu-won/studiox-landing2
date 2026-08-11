@@ -1,0 +1,30 @@
+import localFont from "next/font/local";
+import { Cal_Sans } from "next/font/google";
+
+export const pretendard = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Pretendard-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    { path: "../../public/fonts/Pretendard-Medium.woff2", weight: "500", style: "normal" },
+    {
+      path: "../../public/fonts/Pretendard-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    { path: "../../public/fonts/Pretendard-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--pretendard",
+  display: "swap",
+  preload: true,
+});
+
+export const calSans = Cal_Sans({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--calSans",
+  display: "swap",
+  adjustFontFallback: false,
+});

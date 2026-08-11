@@ -1,0 +1,41 @@
+{
+  "typescript": true,
+  "icon": true,
+  "titleProp": true,
+  "memo": true,
+  "svgo": true,
+  "svgProps": {
+    "role": "img",
+    "focusable": "false",
+    "aria-hidden": "true"
+  },
+  "replaceAttrValues": {
+    "#000000": "currentColor",
+    "#626B7F": "currentColor",
+    "#A9B4C6": "currentColor",
+    "#808A9D": "currentColor"
+  },
+  "svgoConfig": {
+    "plugins": [
+      {
+        "name": "preset-default",
+        "params": {
+          "overrides": {
+            "convertColors": true
+          }
+        }
+      },
+      {
+        "name": "removeDimensions",
+        "active": true
+      },
+      {
+        "name": "prefixIds",
+        "params": {
+          "prefixIds": true,
+          "prefixClassNames": true
+        }
+      }
+    ]
+  }
+}
